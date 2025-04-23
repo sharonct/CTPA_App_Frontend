@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 from api.client import analyze_scan
 from utils.notification import add_notification
 
@@ -12,7 +13,7 @@ def render_report_section(scan_id):
     # Check if report exists in session state
     if scan_id in st.session_state.reports and st.session_state.reports[scan_id]:
         # Display report
-        st.components.v1.html(st.session_state.reports[scan_id], height=400, scrolling=True)
+        components.html(st.session_state.reports[scan_id], height=400, scrolling=True)
         
         # Report action buttons
         cols = st.columns([1, 1, 1])

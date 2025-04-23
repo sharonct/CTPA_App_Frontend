@@ -9,24 +9,24 @@ def display_window_controls():
     # Window presets
     cols = st.columns(4)
     with cols[0]:
+        if st.button("PE Protocol", use_container_width=True, type="primary"):
+            st.session_state.window_center = 100
+            st.session_state.window_width = 700
+            st.rerun()
+    with cols[1]:
         if st.button("Pulmonary", use_container_width=True):
             st.session_state.window_center = -600
             st.session_state.window_width = 1500
             st.rerun()
-    with cols[1]:
+    with cols[2]:
         if st.button("Mediastinal", use_container_width=True):
             st.session_state.window_center = 40
             st.session_state.window_width = 400
             st.rerun()
-    with cols[2]:
+    with cols[3]:
         if st.button("Bone", use_container_width=True):
             st.session_state.window_center = 500
             st.session_state.window_width = 2000
-            st.rerun()
-    with cols[3]:
-        if st.button("PE Protocol", use_container_width=True):
-            st.session_state.window_center = 100
-            st.session_state.window_width = 700
             st.rerun()
     
     # Custom window controls
@@ -94,18 +94,39 @@ def display_scan_views(scan_id, metadata):
     # Set slice parameters based on view
     if current_view == 'axial':
         max_slice = dims[2] - 1 if len(dims) > 2 else 0
-        slice_idx = st.slider('Navigate Slices', 0, max_slice, st.session_state.axial_slice, key='axial_slice')
-        st.session_state.axial_slice = slice_idx
+        # Initialize axial_slice in session_state if not present
+        if 'axial_slice' not in st.session_state:
+            st.session_state.axial_slice = max_slice // 2
+        # Use the value from session_state for the slider
+        slice_idx = st.slider('Navigate Slices', 0, max_slice, st.session_state.axial_slice, key='axial_nav')
+        # Store the value back to session_state, but only if changed
+        if slice_idx != st.session_state.axial_slice:
+            st.session_state.axial_slice = slice_idx
+            st.rerun()
         view_label = "Axial View"
     elif current_view == 'sagittal':
         max_slice = dims[0] - 1 if len(dims) > 0 else 0
-        slice_idx = st.slider('Navigate Slices', 0, max_slice, st.session_state.sagittal_slice, key='sagittal_slice')
-        st.session_state.sagittal_slice = slice_idx
+        # Initialize sagittal_slice in session_state if not present
+        if 'sagittal_slice' not in st.session_state:
+            st.session_state.sagittal_slice = max_slice // 2
+        # Use the value from session_state for the slider
+        slice_idx = st.slider('Navigate Slices', 0, max_slice, st.session_state.sagittal_slice, key='sagittal_nav')
+        # Store the value back to session_state, but only if changed
+        if slice_idx != st.session_state.sagittal_slice:
+            st.session_state.sagittal_slice = slice_idx
+            st.rerun()
         view_label = "Sagittal View"
     else:  # coronal
         max_slice = dims[1] - 1 if len(dims) > 1 else 0
-        slice_idx = st.slider('Navigate Slices', 0, max_slice, st.session_state.coronal_slice, key='coronal_slice')
-        st.session_state.coronal_slice = slice_idx
+        # Initialize coronal_slice in session_state if not present
+        if 'coronal_slice' not in st.session_state:
+            st.session_state.coronal_slice = max_slice // 2
+        # Use the value from session_state for the slider
+        slice_idx = st.slider('Navigate Slices', 0, max_slice, st.session_state.coronal_slice, key='coronal_nav')
+        # Store the value back to session_state, but only if changed
+        if slice_idx != st.session_state.coronal_slice:
+            st.session_state.coronal_slice = slice_idx
+            st.rerun()
         view_label = "Coronal View"
     
     # Get the slice
@@ -119,12 +140,20 @@ def display_scan_views(scan_id, metadata):
     
     if slice_data and "image" in slice_data:
         # Display the image
-        st.image(slice_data["image"], caption=f"{view_label} - Slice {slice_idx}", use_column_width=True)
+        st.image(slice_data["image"], caption=f"{view_label} - Slice {slice_idx}", use_container_width=True)
     else:
         st.error("Failed to load scan slice")
 
 def render_viewer_section(scan_id, metadata):
     """Render the scan viewer section"""
+    # Initialize session state variables if not present
+    if 'current_view' not in st.session_state:
+        st.session_state.current_view = 'axial'
+    if 'window_center' not in st.session_state:
+        st.session_state.window_center = 100  # Default to PE Protocol settings
+    if 'window_width' not in st.session_state:
+        st.session_state.window_width = 700
+    
     # Scan visualization section heading
     st.markdown("""
     <h3 style="color: black; margin: 0;">🩺 CTPA Visualization</h3>

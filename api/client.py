@@ -102,6 +102,7 @@ def analyze_scan(scan_id, questions):
         }
         
         response = requests.post(f"{API_URL}/analyze", json=data)
+        print(response)
         
         if response.status_code == 200:
             return response.json()
