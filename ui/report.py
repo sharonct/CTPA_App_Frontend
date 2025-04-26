@@ -1,10 +1,6 @@
 import streamlit as st
 import streamlit.components.v1 as components
-<<<<<<< Updated upstream
-from api.client import analyze_scan
-=======
 from api.client import analyze_scan, get_api_health, API_URL, get_scan_metadata
->>>>>>> Stashed changes
 from utils.notification import add_notification
 import requests
 import json
@@ -27,11 +23,7 @@ def render_report_section(scan_id):
     
     # Check if report exists in session state
     if scan_id in st.session_state.reports and st.session_state.reports[scan_id]:
-<<<<<<< Updated upstream
-        # Display report
-=======
         # Display report using the correct components import
->>>>>>> Stashed changes
         components.html(st.session_state.reports[scan_id], height=400, scrolling=True)
         
         # Report action buttons
