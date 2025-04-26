@@ -1,6 +1,6 @@
 import streamlit as st
-from sidebar import render_sidebar
-from report import render_report_section
+from ui.sidebar import render_sidebar
+from ui.report import render_report_section
 from utils.notification import check_notifications
 import logging
 
